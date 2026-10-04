@@ -161,3 +161,47 @@ async def receive_webhook(
         status_code=status.HTTP_200_OK,
         media_type="application/json",
     )
+
+
+# ---------------------------------------------------------------------------
+# Merged Frontend Static Assets & SPA Client-Side Routing
+# ---------------------------------------------------------------------------
+import os
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+DIST_CANDIDATES = [
+    Path(os.environ["FRONTEND_DIST_DIR"]) if os.environ.get("FRONTEND_DIST_DIR") else None,
+    Path(__file__).resolve().parent.parent / "web" / "dist",
+    Path(__file__).resolve().parent / "dist",
+    Path("web/dist").resolve(),
+    Path("/app/web/dist"),
+]
+web_dist_dir = next((p for p in DIST_CANDIDATES if p and (p / "index.html").is_file()), None)
+
+if web_dist_dir and (web_dist_dir / "assets").is_dir():
+    app.mount("/assets", StaticFiles(directory=str(web_dist_dir / "assets")), name="assets")
+
+
+@app.get("/", include_in_schema=False)
+async def serve_root():
+    if web_dist_dir:
+        index_file = web_dist_dir / "index.html"
+        if index_file.is_file():
+            return FileResponse(index_file)
+    return {"app": "WhatsApp AI Agent", "status": "running", "docs": "/docs"}
+
+
+@app.get("/{full_path:path}", include_in_schema=False)
+async def serve_spa_fallback(full_path: str):
+    if web_dist_dir:
+        file_path = web_dist_dir / full_path
+        if full_path and file_path.is_file():
+            return FileResponse(file_path)
+        index_file = web_dist_dir / "index.html"
+        if index_file.is_file():
+            return FileResponse(index_file)
+
+    return {"app": "WhatsApp AI Agent", "status": "running", "path": full_path, "docs": "/docs"}
+

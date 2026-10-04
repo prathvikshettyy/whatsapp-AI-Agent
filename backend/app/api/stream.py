@@ -16,9 +16,16 @@ stream_router = APIRouter(tags=["stream"])
 @stream_router.get("/stream")
 async def event_stream(request: Request):
     """Subscribe to live WhatsApp chat events and handoff alerts via SSE."""
-    redis_client = await get_redis()
-    pubsub = redis_client.pubsub()
-    await pubsub.subscribe(REDIS_EVENTS_CHANNEL)
+    has_redis = False
+    pubsub = None
+
+    try:
+        redis_client = await get_redis()
+        pubsub = redis_client.pubsub()
+        await pubsub.subscribe(REDIS_EVENTS_CHANNEL)
+        has_redis = True
+    except Exception as e:
+        logger.warning("sse_redis_unavailable_fallback_to_heartbeat", error=str(e))
 
     async def event_generator():
         try:
@@ -26,20 +33,27 @@ async def event_stream(request: Request):
                 if await request.is_disconnected():
                     break
 
-                # Non-blocking get_message with timeout to allow pinging
-                message = await pubsub.get_message(ignore_subscribe_messages=True, timeout=1.0)
-                if message and message.get("type") == "message":
-                    data = message.get("data")
-                    yield f"data: {data}\n\n"
+                if has_redis and pubsub:
+                    try:
+                        message = await pubsub.get_message(ignore_subscribe_messages=True, timeout=1.0)
+                        if message and message.get("type") == "message":
+                            data = message.get("data")
+                            yield f"data: {data}\n\n"
+                    except Exception:
+                        pass
 
                 # 15s Heartbeat ping per specification
                 now = time.time()
                 if int(now) % 15 == 0:
                     yield f": ping - {now}\n\n"
 
-                await asyncio.sleep(0.5)
+                await asyncio.sleep(1.0)
         finally:
-            await pubsub.unsubscribe(REDIS_EVENTS_CHANNEL)
+            if has_redis and pubsub:
+                try:
+                    await pubsub.unsubscribe(REDIS_EVENTS_CHANNEL)
+                except Exception:
+                    pass
 
     return StreamingResponse(
         event_generator(),

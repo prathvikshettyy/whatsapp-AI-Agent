@@ -16,6 +16,12 @@ test-frontend:
 run-api:
 	uvicorn backend.app.main:app --reload --port 8000
 
+run-merged: build-frontend
+	uvicorn backend.app.main:app --reload --port 8000
+
+build-frontend:
+	cd web && npm run build
+
 run-worker:
 	arq backend.app.worker.settings.WorkerSettings
 
