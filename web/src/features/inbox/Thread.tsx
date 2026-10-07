@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { User, Eye, EyeOff, ShieldAlert, ArrowLeft } from "lucide-react";
+import { User, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { Conversation, Message } from "../../api/types";
 import { useConversationMessages } from "../../api/conversations";
 import { MessageBubble } from "./MessageBubble";

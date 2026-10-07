@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Search, AlertCircle, Bot, Filter, MessageSquareDashed } from "lucide-react";
-import { Conversation } from "../../api/types";
+import { Search, AlertCircle, Bot, MessageSquareDashed } from "lucide-react";
 import { useConversations } from "../../api/conversations";
 import { ConversationItem } from "./ConversationItem";
 import { Skeleton } from "../../components/Input";

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Send, AlertTriangle, FileText, Lock, Sparkles } from "lucide-react";
+import { Send, AlertTriangle, FileText, Lock } from "lucide-react";
 import { Button } from "../../components/Button";
 import { ConvStatus } from "../../api/types";
 import { useSendMessage } from "../../api/conversations";

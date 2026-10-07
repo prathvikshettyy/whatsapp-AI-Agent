@@ -42,7 +42,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd web
-          npm install
+          npm ci
 
       - name: Run Vitest
         run: |

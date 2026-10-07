@@ -3,7 +3,7 @@
  */
 
 import { MOCK_CONVERSATIONS, MOCK_CURRENT_USER, MOCK_KB_ARTICLES, MOCK_MESSAGES, MOCK_PROMPT_VERSIONS, MOCK_SYSTEM_SETTINGS } from "../mocks/data";
-import { Conversation, Message, User } from "./types";
+import { Message, User } from "./types";
 
 export class ApiError extends Error {
   status: number;

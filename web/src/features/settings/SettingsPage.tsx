@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Settings as SettingsIcon, Save, History, CheckCircle2, ShieldAlert, Cpu, Sliders } from "lucide-react";
+import { Settings as SettingsIcon, Save, History, ShieldAlert, Cpu, Sliders } from "lucide-react";
 import { useSettings, useUpdateSettings } from "../../api/settings";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";

@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import { History, RotateCcw, GitCompare, Check, X } from "lucide-react";
+import { History, RotateCcw, X } from "lucide-react";
 import { PromptVersion } from "../../api/types";
 import { usePromptHistory } from "../../api/settings";
 import { Button } from "../../components/Button";
 import { formatDateSeparator } from "../../lib/utils";
 
 interface PromptHistoryProps {
-  currentPrompt: string;
+  currentPrompt?: string;
   onRollback: (historicalPrompt: string) => void;
   onClose: () => void;
 }
 
 export const PromptHistory: React.FC<PromptHistoryProps> = ({
-  currentPrompt,
+  currentPrompt: _currentPrompt,
   onRollback,
   onClose,
 }) => {
